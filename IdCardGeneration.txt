@@ -1,0 +1,134 @@
+package beanshell;
+
+import java.util.*;
+
+
+public class IdCardGeneration {
+	public static void main(String[] args) {
+		
+   	 IdCardGeneration g = new IdCardGeneration();
+        
+        System.out.println(g.generate());
+	}
+	
+
+	
+    public static final Map<String, Integer> idRegion = new HashMap<String, Integer>();
+     
+    static {
+        IdCardGeneration.idRegion.put("北京市", 110000);
+        IdCardGeneration.idRegion.put("市辖区", 110100);
+        IdCardGeneration.idRegion.put("东城区", 110101);
+        IdCardGeneration.idRegion.put("西城区", 110102);
+        IdCardGeneration.idRegion.put("崇文区", 110103);
+        IdCardGeneration.idRegion.put("宣武区", 110104);
+        IdCardGeneration.idRegion.put("朝阳区", 110105);
+        IdCardGeneration.idRegion.put("丰台区", 110106);
+        IdCardGeneration.idRegion.put("石景山区", 110107);
+        IdCardGeneration.idRegion.put("海淀区", 110108);
+        IdCardGeneration.idRegion.put("门头沟区", 110109);
+        IdCardGeneration.idRegion.put("房山区", 110111);
+        IdCardGeneration.idRegion.put("通州区", 110112);
+        IdCardGeneration.idRegion.put("顺义区", 110113);
+        IdCardGeneration.idRegion.put("昌平区", 110114);
+    }
+
+    /**
+     * 生成身份证号码
+     * @return
+     */
+    public String generate() {
+        StringBuilder generater = new StringBuilder();
+        generater.append(this.getRandomArea());
+        generater.append(this.getRandomBirthday());
+        generater.append(this.getRandomNumber());
+        generater.append(this.getTestCode(generater.toString().toCharArray()));
+        return generater.toString();
+    }
+
+    /**
+     * 随机获取地区
+     *
+     * @return
+     */
+    public int getRandomArea() {
+        int index = (int) (Math.random() * IdCardGeneration.idRegion.size());
+        Collection<Integer> values = IdCardGeneration.idRegion.values();
+        Iterator<Integer> it = values.iterator();
+        int i = 0;
+        int code = 0;
+        while (i < index && it.hasNext()) {
+            i++;
+            code = it.next();
+        }
+        return code;
+    }
+
+    /**
+     * 随机获取出生日期
+     *
+     * @return
+     */
+    public String getRandomBirthday() {
+        Calendar birthday = Calendar.getInstance();
+        birthday.set(Calendar.YEAR,  1989);
+        birthday.set(Calendar.MONTH, (int) (Math.random() * 12));
+        birthday.set(Calendar.DATE, (int) (Math.random() * 31));
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(birthday.get(Calendar.YEAR));
+        long month = birthday.get(Calendar.MONTH) + 1;
+        if (month < 10) {
+            builder.append("0");
+        }
+        builder.append(month);
+        long date = birthday.get(Calendar.DATE);
+        if (date < 10) {
+            builder.append("0");
+        }
+        builder.append(date);
+        return builder.toString();
+    }
+
+
+
+    /**
+     * 获取效验码
+     * @param chars
+     * @return
+     */
+    public char getTestCode(char[] chars) {
+        if (chars.length < 17) {
+            return ' ';
+        }
+        int[] c = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
+        char[] r = { '1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2' };
+        int[] n = new int[17];
+        int result = 0;
+        for (int i = 0; i < n.length; i++) {
+            n[i] = Integer.parseInt(chars[i] + "");
+        }
+        for (int i = 0; i < n.length; i++) {
+            result += c[i] * n[i];
+        }
+        return r[result % 11];
+    }
+
+    /**
+     *获取3位随机数
+     * @return
+     */
+    public String getRandomNumber() {
+        int code = (int) (Math.random() * 1000);
+        if (code < 10) {
+            return "00" + code;
+        } else if (code < 100) {
+            return "0" + code;
+        } else {
+            return "" + code;
+        }
+    }
+}
+
+
+
